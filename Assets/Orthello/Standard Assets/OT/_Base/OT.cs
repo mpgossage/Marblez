@@ -736,7 +736,7 @@ public class OT : MonoBehaviour
 		}
 		
 		
-        if (g.collider != null)
+        if (g.GetComponent<Collider>() != null)
         {
 			if (Input.touches.Length>0)
 			{
@@ -745,7 +745,7 @@ public class OT : MonoBehaviour
 					// check if any of the touches are over/on the object
 					for (int i=0; i<inputCameras.Length; i++)
 					{
-			            bool found = g.collider.Raycast(inputCameras[i].ScreenPointToRay(Input.touches[t].position), out hit, 2500f);				
+			            bool found = g.GetComponent<Collider>().Raycast(inputCameras[i].ScreenPointToRay(Input.touches[t].position), out hit, 2500f);				
 						if (found)
 						{
 							instance._touch = Input.touches[t];
@@ -759,7 +759,7 @@ public class OT : MonoBehaviour
 				// check if the mouse is over the object
 				for (int i=0; i<inputCameras.Length; i++)
 				{
-					bool ok = g.collider.Raycast(inputCameras[i].ScreenPointToRay(Input.mousePosition), out hit, 2500f);
+					bool ok = g.GetComponent<Collider>().Raycast(inputCameras[i].ScreenPointToRay(Input.mousePosition), out hit, 2500f);
 					if (ok) return true;
 				}
 				return false;
@@ -870,7 +870,7 @@ public class OT : MonoBehaviour
     /// <returns>True if we clicked on the GameObject</returns>
     public static bool Clicked(GameObject g, int button)
     {
-        if (g.collider != null && Input.GetMouseButtonDown(button))
+        if (g.GetComponent<Collider>() != null && Input.GetMouseButtonDown(button))
             return Over(g);
         return false;
     }
@@ -1549,7 +1549,7 @@ public class OT : MonoBehaviour
 		if (idx>=0)
 		{
 			Camera c = clipCameras[idx];
-			if (g.renderer!=null)
+			if (g.GetComponent<Renderer>()!=null)
 			{
 				Rect r = c.pixelRect;
 				Vector3 bl = c.ScreenToWorldPoint(new Vector3(r.xMin,r.yMin,0));
@@ -1558,7 +1558,7 @@ public class OT : MonoBehaviour
 				Vector2 cc = bl + (cs/2);
 					
 				Bounds cb = new Bounds(cc,cs);
-				return cb.Intersects(g.renderer.bounds);					
+				return cb.Intersects(g.GetComponent<Renderer>().bounds);					
 			}
 		}
 		return true;
@@ -2560,10 +2560,10 @@ public class OT : MonoBehaviour
 					}
 				}
 				
-                if (g.renderer != null)
+                if (g.GetComponent<Renderer>() != null)
 				{
 					if (!(o is OTSprite))
-                    	g.renderer.enabled = true;
+                    	g.GetComponent<Renderer>().enabled = true;
 					else
                     	(o as OTSprite).InvalidateSprite();						
 				}
@@ -2625,8 +2625,8 @@ public class OT : MonoBehaviour
 							o.onCreateObject(o);
 					}					
 					
-                    if (g.renderer != null)
-                        g.renderer.enabled = true;
+                    if (g.GetComponent<Renderer>() != null)
+                        g.GetComponent<Renderer>().enabled = true;
 					
                     return g;
                 }

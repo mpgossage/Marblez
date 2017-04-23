@@ -174,7 +174,7 @@ public class GameGui : MonoBehaviour
 		if (gameOver) return;
 		gameOver=true;
 		Debug.Log("Fail Level");
-        control.audio.PlayOneShot(control.sounds.timeup);
+        control.GetComponent<AudioSource>().PlayOneShot(control.sounds.timeup);
 		control.DisableAllBalls();
 		Destroy(control);
         RecordResults();
@@ -184,7 +184,7 @@ public class GameGui : MonoBehaviour
 		if (gameOver) return;
 		gameOver=true;
 		Debug.Log("Complete Level");
-        control.audio.PlayOneShot(control.sounds.levelComplete);
+        control.GetComponent<AudioSource>().PlayOneShot(control.sounds.levelComplete);
         control.DisableAllBalls();
 		Destroy(control);
         RecordResults();

@@ -114,7 +114,7 @@ public class LevelSelect : MonoBehaviour {
 		}
         // the rollover SFX
         if (newrollover != rollover && newrollover != -1)
-            audio.PlayOneShot(rolloverSound);
+            GetComponent<AudioSource>().PlayOneShot(rolloverSound);
         rollover = newrollover; // update
 		// check for clicks:
 		for(int i=0;i<buttons.Length;i++)
@@ -123,7 +123,7 @@ public class LevelSelect : MonoBehaviour {
 				continue;
 			if (OT.Clicked(buttons[i].gameObject,0))	// left click
 			{
-                audio.PlayOneShot(selectSound);
+                GetComponent<AudioSource>().PlayOneShot(selectSound);
                 PlayLevel(i);
 			}
 		}

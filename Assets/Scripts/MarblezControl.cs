@@ -248,7 +248,7 @@ public class MarblezControl : MonoBehaviour
         bm.enabled = true;
 		bm.Init((int)pos.x,(int)pos.y,dir,col);
         // sound effect:
-        audio.PlayOneShot(sounds.ballSpawn);
+        GetComponent<AudioSource>().PlayOneShot(sounds.ballSpawn);
 	}
     void DisableBall(BallMove bm)
     {
@@ -303,7 +303,7 @@ public class MarblezControl : MonoBehaviour
             MapLoader.Tiles[gx, gy] = tileType;
             //Debug.Log("tiletype" + tileType);
             UpdateTiles();  // overkill to update all the tiles
-            audio.PlayOneShot(sounds.tileClick);
+            GetComponent<AudioSource>().PlayOneShot(sounds.tileClick);
         }
 		else if (tileType>=28 && tileType<=31)	// ball catcher
 		{
@@ -312,7 +312,7 @@ public class MarblezControl : MonoBehaviour
 			if (bm!=null)
 			{
 				bm.enabled=true;	// turn on
-	            audio.PlayOneShot(sounds.ballRelease);
+	            GetComponent<AudioSource>().PlayOneShot(sounds.ballRelease);
 			}
 		}
     }
@@ -352,7 +352,7 @@ public class MarblezControl : MonoBehaviour
 		else if (tileType >= 61)	// colour change
 		{
 			bm.ChangeColour();
-			audio.PlayOneShot(sounds.ballChange);
+			GetComponent<AudioSource>().PlayOneShot(sounds.ballChange);
 		}
 		else if (tileType>=28 && tileType<=31)	// ball catcher
 		{
@@ -361,7 +361,7 @@ public class MarblezControl : MonoBehaviour
 			{
 				// none trapped so trap
 				bm.enabled=false;
-				audio.PlayOneShot(sounds.ballStick);
+				GetComponent<AudioSource>().PlayOneShot(sounds.ballStick);
 			}
 			else
 			{
@@ -390,7 +390,7 @@ public class MarblezControl : MonoBehaviour
 		}
 		if (correct)
 		{
-	        audio.PlayOneShot(sounds.ballHome);   // correct
+	        GetComponent<AudioSource>().PlayOneShot(sounds.ballHome);   // correct
 			tileTop.frameIndex=Random.Range(0,4);	// new top 
 			if (ballColour==4)	// grey
 				GrayEffect();	// extras
@@ -400,7 +400,7 @@ public class MarblezControl : MonoBehaviour
 		else
 		{
 			gui.WrongBallHome();	// one less ball
-			audio.PlayOneShot(sounds.ballWrongHome); // wrong
+			GetComponent<AudioSource>().PlayOneShot(sounds.ballWrongHome); // wrong
 		}
         // disable no matter what
         DisableBall(bm);
@@ -446,12 +446,12 @@ public class MarblezControl : MonoBehaviour
     private void BallDestroy(BallMove bm)
     {
         DisableBall(bm);
-        audio.PlayOneShot(sounds.ballDestroy);
+        GetComponent<AudioSource>().PlayOneShot(sounds.ballDestroy);
     }
 	// public so others can call it
 	public void PlayBounce()
 	{
-		audio.PlayOneShot(sounds.ballBounce);
+		GetComponent<AudioSource>().PlayOneShot(sounds.ballBounce);
 	}
  
 	

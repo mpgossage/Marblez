@@ -52,7 +52,7 @@ public class WinGame : MonoBehaviour
             {
                 if (!Transition.Fading)
                 {
-                    audio.PlayOneShot(selectClip);
+                    GetComponent<AudioSource>().PlayOneShot(selectClip);
                     // use the Transition class for a scene change
                     Transition.FadeIn(GuiUtils.BlackTexture, 1);
                     // in 1.5 second scene change

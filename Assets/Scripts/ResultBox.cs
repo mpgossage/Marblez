@@ -139,15 +139,15 @@ public class ResultBox : MonoBehaviour
 
     void Sound1()
     {
-        audio.PlayOneShot(sounds[0]);
+        GetComponent<AudioSource>().PlayOneShot(sounds[0]);
     }
     void Sound2()
     {
-        audio.PlayOneShot(sounds[1]);
+        GetComponent<AudioSource>().PlayOneShot(sounds[1]);
     }
     void Sound3()
     {
-        audio.PlayOneShot(sounds[2]);
+        GetComponent<AudioSource>().PlayOneShot(sounds[2]);
     }
 
 	// Update is called once per frame
