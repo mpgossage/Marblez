@@ -1,0 +1,32 @@
+see 
+http://marblez.bananascrum.com/projects/marblez/
+
+
+
+Setup of Othello
+
+1. drag OT prefab onto screen
+2. in OT/View change the pixelPerfectResolution to your correct value
+3. Drag spritesheet prefab onto game, set their texture & FramesXY
+4.
+
+
+setup of audio:
+MarblezControl has a list of audio:
+
+audio[0]=spawnball
+
+
+
+
+
+
+
+
+
+local saving:
+http://docs.unity3d.com/Documentation/ScriptReference/PlayerPrefs.GetString.html
+just use a large plater pref item
+http://unitygems.com/saving-data-1-remember-me/
+
+Application.persistentDataPath might work (but not sure on web)

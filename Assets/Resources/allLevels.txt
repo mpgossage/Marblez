@@ -1,0 +1,24 @@
+; details for the various levels
+; format is:
+; level_name,maxballs,numballs,time(seconds)
+; if its not found default is used (3 minutes, 5 balls)
+level01,2,3,170
+level02,2,4,210
+level03,2,4,140
+level04,2,4,210
+level05,2,6,170
+level06,2,6,210
+level07,2,7,315
+level08,2,7,285
+level09,2,7,255
+level10,2,10,300
+level11,3,8,255
+level12,3,8,300
+level13,3,8,420
+level14,3,8,340
+level15,3,8,255
+level16,3,8,340
+level17,3,10,340
+level18,3,10,340
+level19,3,10,420
+level20,3,11,300

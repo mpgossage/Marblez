@@ -1,0 +1,16 @@
+Hello and Welcome to Marblez!!!
+
+Marblez is a retro-remake of the Amiga game 'Toobz' by Gary Dunne / Digital Wizardy
+
+Written by Mark Gossage
+Graphics by Mark Gossage
+
+Special thanks to:
+Those people who contributed sound/music to OpenGameArt.org: virix, qubodup, HorrorPen, copyc4t
+Codeman38 who contributed the fonts to fontspace.com
+Kevin MacLeod who provides such awesome music thru incompetech.com
+
+Some of the sounds in this project were created by David McKee (ViRiX) soundcloud.com/virix
+
+Hint: Level 20 CAN BE COMPLETED, if you are having trouble with it, get a three star rating on the other levels and come back to it.
+
