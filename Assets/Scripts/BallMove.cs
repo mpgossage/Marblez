@@ -1,8 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class BallMove : MonoBehaviour 
 {
+    [SerializeField]
+    private Sprite[] sprites;
+
 	public enum Direction{Up,Down,Left,Right,Error};
 	delegate Vector3 Path(float val);	// path takes in 0..1 & returns a path in range -1..0..+1
 	public static float BallSpeed=1.0f;
@@ -15,17 +19,24 @@ public class BallMove : MonoBehaviour
 	Path currentPath;
 	
 	MarblezControl map;
+    private SpriteRenderer renderer;
 	
 	public int GridX{get{return gridX;}}
 	public int GridY{get{return gridY;}}
+    public int Colour { get { return colour; } }
 	
+    void Awake()
+    {
+        renderer = GetComponent<SpriteRenderer>();
+    }
+
 	public void Init(int x,int y,Direction dir,int col)
 	{
 		gridX=x;	gridY=y;
 		SetColour(col);
 		inDir=outDir=dir;
 		gridCentre=MarblezControl.GridToVector3(gridX,gridY);
-		gridCentre.z=900;	// a long way back
+		gridCentre.z=-50;	// a long way back
 		pathPos=0.5f;	// mid path
 		GetPath();	// get it
 		transform.position=gridCentre;
@@ -47,15 +58,10 @@ public class BallMove : MonoBehaviour
 		}
 	}
 	
-	public int GetColour()
-	{
-		return gameObject.GetComponent<OTSprite>().frameIndex;
-	}
-
 	public void SetColour(int col)
 	{
 		colour=col;
-		gameObject.GetComponent<OTSprite>().frameIndex=colour;
+        renderer.sprite = sprites[col];
 	}
 	
 	// Use this for initialization
@@ -84,7 +90,9 @@ public class BallMove : MonoBehaviour
             map.BallOnTile(this, gridX, gridY);   // tell the game controller
 		if (pathPos>1)
 			NextGrid();	// move to next grid
-		transform.position=gridCentre+64*currentPath(pathPos);
+        Vector3 pos = gridCentre + 64 * currentPath(pathPos);
+        pos.z = -50; // in front of tiles, but behind the tile tops
+        transform.position = pos;
 	}
 	
 	void GetPath()
@@ -104,9 +112,6 @@ public class BallMove : MonoBehaviour
         inDir = outDir = dir;
         GetPath(); // and a new path
     }
-	
-
-
 	
 	// have finished the path, so next grid:
 	void NextGrid()

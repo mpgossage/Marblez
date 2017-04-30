@@ -1,16 +1,19 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GameGui : MonoBehaviour 
 {
-    public OTContainer font;
+    [SerializeField]
+    private Text txtScore, txtMessage;
+    [SerializeField]
+    private Image sprNextBall;
+    [SerializeField]
+    private Sprite[] ballSprites;
 
 	MarblezControl control;
-    OTContainer ballSpriteSheet;
 
-    OTTextSprite textSprite1, textSprite2;
-    OTSprite ballSprite;
-	
+    private Vector3 messageTopPos, messageBottomPos;
 	
 	int ballRequirement;
 	float timer;
@@ -25,30 +28,13 @@ public class GameGui : MonoBehaviour
 	void Start () 
 	{
 		control=GetComponent<MarblezControl>();
-        ballSpriteSheet = control.ballSpriteSheet;
         ballRequirement = MapLoader.BallRequirement;
         timer = MapLoader.TimeLimit;
 		nextBallColour=Random.Range(0,6);
-        // create the sprites:
-        textSprite1 = OT.CreateObject(OTObjectType.TextSprite).GetComponent<OTTextSprite>();
-        textSprite1.spriteContainer = font;
-        textSprite1.pivot = OTObject.Pivot.Top;
-        textSprite1.position = new Vector2(0, -215);
-        textSprite1.depth = 100;    // quite far back
-        textSprite1.tintColor = Color.white;
-        textSprite1.size = Vector2.one;
-        textSprite2 = OT.CreateObject(OTObjectType.TextSprite).GetComponent<OTTextSprite>();
-        textSprite2.spriteContainer = font;
-        textSprite2.pivot = OTObject.Pivot.Top;
-        textSprite2.position = new Vector2(0, -240);
-        textSprite2.depth = 100;    // quite far back
-        ballSprite = OT.CreateObject(OTObjectType.Sprite).GetComponent<OTSprite>();
-        ballSprite.spriteContainer = ballSpriteSheet;
-        ballSprite.pivot = OTObject.Pivot.TopRight;
-        ballSprite.position = new Vector2(310, -215);
-        ballSprite.depth = 100;
-        ballSprite.size = new Vector2(19, 19);
-	}
+        // store message positions for later tweens
+        messageTopPos = txtScore.transform.position;
+        messageBottomPos = txtMessage.transform.position;
+    }
 	
 	// Update is called once per frame
 	void Update () 
@@ -72,8 +58,8 @@ public class GameGui : MonoBehaviour
         int sec = Mathf.CeilToInt(timer);
         int min = sec / 60;
         sec = sec % 60;
-        textSprite1.text = string.Format("Score {0,5}  Time {1}:{2:00}  Left {3,2}  Next  ", GameState.levelScore + GameState.gameScore, min, sec, ballRequirement);
-        ballSprite.frameIndex = nextBallColour;
+        txtScore.text = string.Format("Score {0,5}  Time {1}:{2:00}  Left {3,2}  Next  ", GameState.levelScore + GameState.gameScore, min, sec, ballRequirement);
+        sprNextBall.sprite = ballSprites[nextBallColour];
     }
     void UpdateTween()
     {
@@ -104,13 +90,11 @@ public class GameGui : MonoBehaviour
         if (fadeState == FadeState.Show)
             pos = 1;
         // set positions accordingly
-        Vector2 textUp=new Vector2(-10,-215),textDown=new Vector2(-10,-240),
-            ballUp=new Vector2(310,-215),ballDown=new Vector2(310,-240);
-        textSprite1.position = Vector2.Lerp(textUp, textDown, pos);
-        textSprite2.position = Vector2.Lerp(textDown, textUp, pos);
-        ballSprite.position = Vector2.Lerp(ballUp, ballDown, pos);
+        txtScore.transform.position = Vector3.Lerp(messageTopPos, messageBottomPos, pos);
+        txtMessage.transform.position = Vector3.Lerp(messageBottomPos, messageTopPos, pos);
+        // ball is attached to the text, so nothing to do for that
     }
-	public int NextBallColour()
+    public int NextBallColour()
 	{
 		int val=nextBallColour;
 		nextBallColour=Random.Range(0,6);
@@ -147,7 +131,8 @@ public class GameGui : MonoBehaviour
 	}
 	public void ShowText(string txt)
 	{
-		textSprite2.text=txt;
+        txtMessage.text = txt;
+		//textSprite2.text=txt;
 
         if (fadeState==FadeState.In)
         {
@@ -174,7 +159,7 @@ public class GameGui : MonoBehaviour
 		if (gameOver) return;
 		gameOver=true;
 		Debug.Log("Fail Level");
-        control.GetComponent<AudioSource>().PlayOneShot(control.sounds.timeup);
+        control.GetComponent<AudioSource>().PlayOneShot(control.Sounds.timeup);
 		control.DisableAllBalls();
 		Destroy(control);
         RecordResults();
@@ -184,7 +169,7 @@ public class GameGui : MonoBehaviour
 		if (gameOver) return;
 		gameOver=true;
 		Debug.Log("Complete Level");
-        control.GetComponent<AudioSource>().PlayOneShot(control.sounds.levelComplete);
+        control.GetComponent<AudioSource>().PlayOneShot(control.Sounds.levelComplete);
         control.DisableAllBalls();
 		Destroy(control);
         RecordResults();

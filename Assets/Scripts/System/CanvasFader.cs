@@ -51,6 +51,15 @@ namespace Gossage.System
             m_fadeTarget = targetAlpha;
             m_fadeRate = 1.0f / time;
         }
+        public void SetOut(float targetAlpha = 0.0f)
+        {
+            m_fadingNow = false; // finished a fade
+            if (m_effectInteraction)
+            {
+                m_canvas.interactable = m_canvas.blocksRaycasts = m_enableWhenArrived;
+            }
+            m_canvas.alpha = targetAlpha;
+        }
     }
 
 }

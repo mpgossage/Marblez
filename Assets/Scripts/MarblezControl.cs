@@ -3,162 +3,161 @@ using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 
-public class MarblezControl : MonoBehaviour 
+public class MarblezControl : MonoBehaviour
 {
-	public const int GRID_W=10,GRID_H=7;
-	public OTContainer tilesSpriteSheet;
-	public OTContainer tileTopsSpriteSheet;
-	public OTContainer ballSpriteSheet;
-	
-	#region sprites
-	OTSprite[,] tileSprites;	// 2d array of the sprites for the tiles
-	OTSprite[,] tileTopSprites;	// 2d array of the sprites for the tile tops (mainly nulls)
-    OTSprite[] ballSprites;
-	#endregion
-	
-	GameGui gui;
-	bool directionSwap;
-	
-	// trick to group sounds together
-	// must be marked System.Serializable, 
-	// [SerializeField] doesn't work
-	[System.Serializable]
-	public class MarblezSounds
-	{
-		public AudioClip tileClick;
-		public AudioClip ballSpawn, ballBounce, ballDestroy;
-		public AudioClip ballHome, ballWrongHome;
-		public AudioClip ballStick,ballRelease;
-		public AudioClip ballChange;
+    public const int GRID_W = 10, GRID_H = 7;
+    [SerializeField]
+    private GameObject tileObject;
+    [SerializeField]
+    private Sprite[] tileMap, tileTops;
+    [SerializeField]
+    private GameObject ballObject;
+
+
+    #region sprites
+    SpriteRenderer[,] uTileSprites;    // 2d array of the sprites for the tiles
+    SpriteRenderer[,] uTileTopSprites;	// 2d array of the sprites for the tile tops (mainly nulls)
+    private BallMove[] ballSprites;
+    #endregion
+
+    GameGui gui;
+    bool directionSwap;
+
+    // trick to group sounds together
+    // must be marked System.Serializable, 
+    // [SerializeField] doesn't work
+    [System.Serializable]
+    public class MarblezSounds
+    {
+        public AudioClip tileClick;
+        public AudioClip ballSpawn, ballBounce, ballDestroy;
+        public AudioClip ballHome, ballWrongHome;
+        public AudioClip ballStick, ballRelease;
+        public AudioClip ballChange;
         public AudioClip timeup, levelComplete;
-	}
-	public MarblezSounds sounds=new MarblezSounds();
-	
-	#region Unity Events
+    }
+    [SerializeField]
+    private MarblezSounds sounds;
+
+    public MarblezSounds Sounds { get { return sounds; } }
+
+    #region Unity Events
     // called before starting
     void Awake()
     {
         // must call this early as others may depend upon it
-		string scenename=string.Format("level{0:00}",GameState.levelNumber);
+        string scenename = string.Format("level{0:00}", GameState.levelNumber);
         MapLoader.LoadMap(scenename);
     }
-	// Use this for initialization
-	void Start () 
-	{
+    // Use this for initialization
+    void Start()
+    {
         directionSwap = false;  // reset the direction
 
         CreateBalls();
-		CreateTiles();
-		CreateTileTops();
-		UpdateTiles();
+        CreateTiles();
+        UpdateTiles();
 
         //SpawnBall();
-		//SpawnBall(2,0);
-		//SpawnBall(2,0);
-		//SpawnBall(5,0);
-		gui=GetComponent<GameGui>();
+        //SpawnBall(2,0);
+        //SpawnBall(2,0);
+        //SpawnBall(5,0);
+        gui = GetComponent<GameGui>();
 
         // spawn a ball every 5 seconds (first one quickly)
         InvokeRepeating("SpawnBall", 1.5f, 5);
-	}
-	void Update()
-	{
-        if (Input.GetKey(KeyCode.F1))
-            gui.BallHome();	// one less ball
-		// look for a click:
-		if (Input.GetMouseButtonUp(0))  // left
-		{
-			Vector2 gridPos=Vector3ToGrid(Input.mousePosition);
+    }
+    void Update()
+    {
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.F1))
+            gui.BallHome(); // one less ball
+#endif
+        // look for a click:
+        if (Input.GetMouseButtonUp(0))  // left
+        {
+            Vector2 gridPos = Vector3ToGrid(Input.mousePosition);
             //Debug.Log("mouse" + Input.mousePosition + " grid:" + gridPos);
             if (gridPos.y <= 7) // check limits
                 mouseClick(gridPos, true);
-		}
+        }
         if (Input.GetMouseButtonUp(1))  // right
         {
             Vector2 gridPos = Vector3ToGrid(Input.mousePosition);
             if (gridPos.y <= 7)
                 mouseClick(gridPos, false);
         }
-	}
-	#endregion
+    }
+    #endregion
 
-		
-	#region Tiles
-	void UpdateTiles()
-	{
+
+    #region Tiles
+    void UpdateTiles()
+    {
         for (int j = 0; j < GRID_H; j++)
-		{
+        {
             for (int i = 0; i < GRID_W; i++)
-			{
-                tileSprites[i, j].frameIndex = MapLoader.Tiles[i, j];
-			}
-		}
-	}
+            {
+                uTileSprites[i, j].sprite = tileMap[MapLoader.Tiles[i, j]];
+            }
+        }
+    }
 
-	void CreateTiles()
-	{
-		tileSprites=new OTSprite[GRID_W, GRID_H];
-		Vector2 defaultSize=new Vector2(64,64);
+    void CreateTiles()
+    {
+        Transform tileHolder = tileObject.transform.parent;
 
+        uTileSprites = new SpriteRenderer[GRID_W, GRID_H];
         for (int i = 0; i < GRID_W; i++)
-		{
+        {
             for (int j = 0; j < GRID_H; j++)
-			{
-				OTSprite spr=OT.CreateObject(OTObjectType.Sprite).GetComponent<OTSprite>();
-				spr.spriteContainer=tilesSpriteSheet;
-				spr.frameIndex=0;
-				spr.transform.position=GridToVector3(i,j);
-				spr.size=defaultSize;
-				spr.transparent=false;
-				spr.depth=1000;	// at the back
-				tileSprites[i,j]=spr;
-			}
-		}
-	}
-	void CreateTileTops()
-	{
-		tileTopSprites=new OTSprite[GRID_W, GRID_H];
-		// now the tops:
-		int colour=0;	// each top should be a different colour
+            {
+                GameObject tile = Instantiate(tileObject);
+                tile.transform.SetParent(tileHolder);
+                tile.transform.position = GridToVector3(i, j);
+                uTileSprites[i, j] = tile.GetComponent<SpriteRenderer>();
+            }
+        }
+
+        // now the tops:
+        uTileTopSprites = new SpriteRenderer[GRID_W, GRID_H];
+        int colour = 0;	// each top should be a different colour
         for (int i = 0; i < GRID_W; i++)
-		{
+        {
             for (int j = 0; j < GRID_H; j++)
-			{
+            {
                 int tileType = MapLoader.Tiles[i, j];
-				int top=-1;
-		        if (tileType == 7 || (tileType >= 36 && tileType <= 39))  // a home
-				{
-					top=colour;	// the colour
-					colour=(colour+1)%4;	// next colour
-				}
-				else if (tileType>=32 && tileType<=35)	// a launcher
-				{
-					top=tileType-32+10;
-				}
-				else if (tileType>=56 && tileType<=60)	// redirector
-				{
-					top=tileType-56+4;
-				}
-				else if (tileType>=61)	// colour changer
-				{
-					top=9;
-				}
-				if (top>=0)	// there is a top
-				{
-					OTSprite spr=OT.CreateObject(OTObjectType.Sprite).GetComponent<OTSprite>();
-					spr.spriteContainer=tileTopsSpriteSheet;
-					spr.frameIndex=top;
-					spr.transform.position=GridToVector3(i,j);
-					spr.size=new Vector2(28,28);
-					spr.transparent=true;
-					spr.depth=800;	// in front of the balls
-					tileTopSprites[i,j]=spr;
-				}
-			}
-		}
-		
-	}
-	#endregion
+                int top = -1;
+                if (tileType == 7 || (tileType >= 36 && tileType <= 39))  // a home
+                {
+                    top = colour;   // the colour
+                    colour = (colour + 1) % 4;  // next colour
+                }
+                else if (tileType >= 32 && tileType <= 35)  // a launcher
+                {
+                    top = tileType - 32 + 10;
+                }
+                else if (tileType >= 56 && tileType <= 60)  // redirector
+                {
+                    top = tileType - 56 + 4;
+                }
+                else if (tileType >= 61)    // colour changer
+                {
+                    top = 9;
+                }
+                if (top >= 0)   // there is a top
+                {
+                    GameObject spr = Instantiate(tileObject);
+                    spr.transform.SetParent(tileHolder);
+                    spr.transform.position = GridToVector3(i, j) + new Vector3(0, 0, -100); // more forward
+                    uTileTopSprites[i, j] = spr.GetComponent<SpriteRenderer>(); ;
+                    uTileTopSprites[i, j].sprite = tileTops[top];
+                }
+            }
+        }
+        tileObject.SetActive(false);    // hide original
+    }
+    #endregion
 
     #region Grid/Pos Conversion
     public static Vector3 GridToVector3(int gridX, int gridY)
@@ -176,46 +175,65 @@ public class MarblezControl : MonoBehaviour
         // offset of pos (y is +ve because openGL us +Y up)
         screen.y = 480 - screen.y;
         return new Vector2(Mathf.FloorToInt(screen.x / 64), Mathf.FloorToInt(screen.y / 64));
-    } 
+    }
     #endregion
 
     #region Ball Managment
     private void CreateBalls()
     {
-        if (ballSprites!=null)    return;
-        ballSprites = new OTSprite[MapLoader.MaxBalls];
+        if (ballSprites != null) return;
+        Transform parent = ballObject.transform.parent;
+        ballSprites = new BallMove[MapLoader.MaxBalls];
         for (int i = 0; i < ballSprites.Length; i++)
         {
             // create the ball, but disable it
-            GameObject obj=OT.CreateObject(OTObjectType.Sprite);
-		    OTSprite spr=obj.GetComponent<OTSprite>();
-		    spr.spriteContainer=ballSpriteSheet;
-		    spr.size=new Vector2(19,19);
-		    spr.transparent=true;
-		    spr.depth=900;	// fairly back
-		    BallMove bm=obj.AddComponent<BallMove>();
-            bm.enabled = false;
+            GameObject obj = Instantiate(ballObject);
+            obj.transform.SetParent(parent);
             obj.SetActive(false);    // its not active
-            ballSprites[i]=spr;   // store for later
+            ballSprites[i] = obj.GetComponent<BallMove>();   // store for later
         }
+        ballObject.SetActive(false);    // hide original
     }
-	/// <summary>
+    /// <summary>
     /// spawns the next ball, at wherever it should be
     /// </summary>
     public void SpawnBall()
     {
         // find an inactive ball
-        OTSprite spr=null;
-        foreach(OTSprite b in ballSprites)
+        BallMove bm = null;
+        foreach (var b in ballSprites)
         {
-            if (b.gameObject.activeSelf==false)
+            if (b.gameObject.activeSelf == false)
             {
-                spr=b;
+                bm = b;
                 break;
             }
         }
-        if (spr==null)  return;
-        // being lazy & looking for spawn places now!
+        if (bm == null) return;
+        Vector2 pos = GetSpawnPoint();
+        // get the grid info:
+        int tileType = MapLoader.Tiles[(int)pos.x, (int)pos.y];
+        // new get the direction of ball motion:
+        BallMove.Direction dir = BallMove.Direction.Error;
+        if (tileType == 32)
+            dir = BallMove.Direction.Up;
+        if (tileType == 33)
+            dir = BallMove.Direction.Right;
+        if (tileType == 34)
+            dir = BallMove.Direction.Down;
+        if (tileType == 35)
+            dir = BallMove.Direction.Left;
+        // colour (fron GUI)
+        int col = gui.NextBallColour();
+        // activate the ball:
+        bm.gameObject.SetActive(true);
+        bm.enabled = true;
+        bm.Init((int)pos.x, (int)pos.y, dir, col);
+        // sound effect:
+        GetComponent<AudioSource>().PlayOneShot(sounds.ballSpawn);
+    }
+    private Vector2 GetSpawnPoint()
+    {
         List<Vector2> spawnPoints = new List<Vector2>();
         for (int i = 0; i < GRID_W; i++)
         {
@@ -225,44 +243,22 @@ public class MarblezControl : MonoBehaviour
                     spawnPoints.Add(new Vector2(i, j));
             }
         }
-        if (spawnPoints.Count < 1) return;
+        if (spawnPoints.Count < 1) return Vector2.zero;
         // pick one:
-        Vector2 pos = spawnPoints[Random.Range(0, spawnPoints.Count)];
-        // get the grid info:
-        int tileType = MapLoader.Tiles[(int)pos.x, (int)pos.y];
-        // new get the direction of ball motion:
-        BallMove.Direction dir=BallMove.Direction.Error;
-        if (tileType==32)
-            dir=BallMove.Direction.Up;
-        if (tileType==33)
-            dir=BallMove.Direction.Right;
-        if (tileType==34)
-            dir=BallMove.Direction.Down;
-        if (tileType==35)
-            dir=BallMove.Direction.Left;
-        // colour (fron GUI)
-        int col=gui.NextBallColour();
-        // activate the ball:
-        spr.gameObject.SetActive(true);
-        BallMove bm=spr.gameObject.GetComponent<BallMove>();
-        bm.enabled = true;
-		bm.Init((int)pos.x,(int)pos.y,dir,col);
-        // sound effect:
-        GetComponent<AudioSource>().PlayOneShot(sounds.ballSpawn);
-	}
+        return spawnPoints[Random.Range(0, spawnPoints.Count)];
+    }
     void DisableBall(BallMove bm)
     {
         bm.gameObject.SetActive(false);
         bm.enabled = false;
     }
-	public void DisableAllBalls()
-	{
-		foreach(OTSprite b in ballSprites)
-		{
-			b.gameObject.SetActive(false);;
-			//b.GetComponent<BallMove>().
-		}		
-	}
+    public void DisableAllBalls()
+    {
+        foreach (var b in ballSprites)
+        {
+            b.gameObject.SetActive(false);
+        }
+    }
 
     #endregion
 
@@ -270,17 +266,17 @@ public class MarblezControl : MonoBehaviour
     /// call by the tile click routine when the user clicks on a tile
     /// </summary>
     /// <param name="gridPos"></param>
-    public void mouseClick(Vector2 gridPos,bool leftButton)
+    public void mouseClick(Vector2 gridPos, bool leftButton)
     {
         //Debug.Log("mouseClick" + gridPos);
-        int gx=(int)gridPos.x,gy=(int)gridPos.y;
+        int gx = (int)gridPos.x, gy = (int)gridPos.y;
         int tileType = MapLoader.Tiles[gx, gy];
         if (tileType >= 40 && tileType <= 45)
         {
-            bool clockwise=!leftButton;	// left button is anti-clockwise
-			if (directionSwap)
-				clockwise=!clockwise;
-			
+            bool clockwise = !leftButton;   // left button is anti-clockwise
+            if (directionSwap)
+                clockwise = !clockwise;
+
             if (clockwise)
             {
                 if (tileType == 43)
@@ -305,16 +301,16 @@ public class MarblezControl : MonoBehaviour
             UpdateTiles();  // overkill to update all the tiles
             GetComponent<AudioSource>().PlayOneShot(sounds.tileClick);
         }
-		else if (tileType>=28 && tileType<=31)	// ball catcher
-		{
-			// check all balls to see if there are any disabled on this cell
-			BallMove bm=FindTrappedBall(gx,gy);
-			if (bm!=null)
-			{
-				bm.enabled=true;	// turn on
-	            GetComponent<AudioSource>().PlayOneShot(sounds.ballRelease);
-			}
-		}
+        else if (tileType >= 28 && tileType <= 31)  // ball catcher
+        {
+            // check all balls to see if there are any disabled on this cell
+            BallMove bm = FindTrappedBall(gx, gy);
+            if (bm != null)
+            {
+                bm.enabled = true;  // turn on
+                GetComponent<AudioSource>().PlayOneShot(sounds.ballRelease);
+            }
+        }
     }
     /// <summary>
     /// called by the ball, when it hits the middle of the tile
@@ -329,7 +325,7 @@ public class MarblezControl : MonoBehaviour
         }
         else if (tileType == 6)  // ball destroyer
         {
-            BallDestroy(bm); 
+            BallDestroy(bm);
         }
         else if (tileType >= 24 && tileType <= 27)  // bouncer
         {
@@ -341,7 +337,7 @@ public class MarblezControl : MonoBehaviour
         }
         else if (tileType >= 56 && tileType <= 60)  // redirector
         {
-            BallMove.Direction dir = (BallMove.Direction)Random.Range(0,4);
+            BallMove.Direction dir = (BallMove.Direction)Random.Range(0, 4);
             if (tileType == 56) dir = BallMove.Direction.Up;
             if (tileType == 57) dir = BallMove.Direction.Right;
             if (tileType == 58) dir = BallMove.Direction.Down;
@@ -349,63 +345,73 @@ public class MarblezControl : MonoBehaviour
 
             bm.SetDirection(dir);   // force it to change direction
         }
-		else if (tileType >= 61)	// colour change
-		{
-			bm.ChangeColour();
-			GetComponent<AudioSource>().PlayOneShot(sounds.ballChange);
-		}
-		else if (tileType>=28 && tileType<=31)	// ball catcher
-		{
-			// see if any already trapped:
-			if (FindTrappedBall(gridX,gridY)==null)
-			{
-				// none trapped so trap
-				bm.enabled=false;
-				GetComponent<AudioSource>().PlayOneShot(sounds.ballStick);
-			}
-			else
-			{
-				// there is a trapped, so bounce:
-				PlayBounce();
-			}
-		}
+        else if (tileType >= 61)    // colour change
+        {
+            bm.ChangeColour();
+            GetComponent<AudioSource>().PlayOneShot(sounds.ballChange);
+        }
+        else if (tileType >= 28 && tileType <= 31)  // ball catcher
+        {
+            // see if any already trapped:
+            if (FindTrappedBall(gridX, gridY) == null)
+            {
+                // none trapped so trap
+                bm.enabled = false;
+                GetComponent<AudioSource>().PlayOneShot(sounds.ballStick);
+            }
+            else
+            {
+                // there is a trapped, so bounce:
+                PlayBounce();
+            }
+        }
     }
 
     private void BallHome(BallMove bm, int gridX, int gridY)
     {
-		// find the tile top for that cell:
-		OTSprite tileTop=tileTopSprites[gridX,gridY];
-		int homeColour=tileTop.frameIndex;
-		// right ball or wrong ball?
-		bool correct=false;
-		int ballColour=bm.GetColour();
-		if (ballColour>=4)	// gray/white
-		{
-			correct=true;
-		}
-		else
-		{
-			if (homeColour==ballColour)
-				correct=true;
-		}
-		if (correct)
-		{
-	        GetComponent<AudioSource>().PlayOneShot(sounds.ballHome);   // correct
-			tileTop.frameIndex=Random.Range(0,4);	// new top 
-			if (ballColour==4)	// grey
-				GrayEffect();	// extras
-			else
-				gui.BallHome();	// one less ball
-		}
-		else
-		{
-			gui.WrongBallHome();	// one less ball
-			GetComponent<AudioSource>().PlayOneShot(sounds.ballWrongHome); // wrong
-		}
+        // find the tile top for that cell:
+        int homeColour = GetHomeColour(gridX, gridY);
+        // right ball or wrong ball?
+        bool correct = false;
+        int ballColour = bm.Colour;
+        if (ballColour >= 4)    // gray/white
+        {
+            correct = true;
+        }
+        else
+        {
+            if (homeColour == ballColour)
+                correct = true;
+        }
+        if (correct)
+        {
+            GetComponent<AudioSource>().PlayOneShot(sounds.ballHome);   // correct
+            uTileTopSprites[gridX,gridY].sprite = tileTops[Random.Range(0, 4)];    // new top 
+            if (ballColour == 4)    // grey
+                GrayEffect();   // extras
+            else
+                gui.BallHome(); // one less ball
+        }
+        else
+        {
+            gui.WrongBallHome();    // one less ball
+            GetComponent<AudioSource>().PlayOneShot(sounds.ballWrongHome); // wrong
+        }
         // disable no matter what
         DisableBall(bm);
     }
-	private void GrayEffect()
+    int GetHomeColour(int gridX, int gridY)
+    {
+        // find the tile top for that cell:
+        // cannot just get index, so need to cross ref the tiles
+        SpriteRenderer spr = uTileTopSprites[gridX, gridY];
+        for(int i=0;i<tileTops.Length;i++)
+        {
+            if (tileTops[i] == spr.sprite) return i;
+        }
+        return 0; // guess
+    }
+    private void GrayEffect()
 	{
         GameState.levelScore += 50; // some score
 		int rnd=Random.Range(0,5);
@@ -457,9 +463,8 @@ public class MarblezControl : MonoBehaviour
 	
 	private BallMove FindTrappedBall(int gridX,int gridY)
 	{
-		foreach(OTSprite b in ballSprites)
+		foreach(var bm in ballSprites)
 		{
-			BallMove bm=b.GetComponent<BallMove>();
 			if (bm.enabled==false &&	// disabled
 				bm.GridX==gridX && bm.GridY==gridY)	// same cell
 			{
