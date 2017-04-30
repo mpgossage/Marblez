@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(Text))]
 public class WinGame : MonoBehaviour 
 {
     public enum Win { ReallyWin, CloseWin, NotWin };
@@ -12,12 +15,12 @@ public class WinGame : MonoBehaviour
 
     string theText;
     float counter = 0;
-    OTTextSprite text;
+    Text text;
 
 	// Use this for initialization
 	void Start () 
     {
-        text=GetComponent<OTTextSprite>();
+        text=GetComponent<Text>();
         if (win==Win.NotWin)
         {
             theText="Not yet";
@@ -63,7 +66,7 @@ public class WinGame : MonoBehaviour
     }
     void MainMenu()
     {
-        Application.LoadLevel("marblezMenu");   // back to menu
+        SceneManager.LoadScene("marblezMenu");   // back to menu
     }
 
 	
