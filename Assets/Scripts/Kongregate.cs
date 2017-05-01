@@ -3,6 +3,7 @@ using System.Collections;
 
 // http://www.kongregate.com/developer_center/docs/en/using-the-api-with-unity3d
 // read http://www.kongregate.com/developer_center/docs/en/statistics-api-tips for very good advice
+// http://developers.kongregate.com/blog/unity-webgl
 public class Kongregate: MonoBehaviour 
 {
     bool isKongregateReady = false;
@@ -11,7 +12,7 @@ public class Kongregate: MonoBehaviour
 
     void Start()
     {
-#if UNITY_WEBPLAYER
+#if UNITY_WEBGL
         // Try to connect to Kongregate.
         // The gameObject.name parameter is used so SendMessage
         // will look for the OnKongregateAPILoaded method
@@ -23,7 +24,7 @@ public class Kongregate: MonoBehaviour
         );
 #endif
     }
-#if UNITY_WEBPLAYER
+#if UNITY_WEBGL
     void OnKongregateAPILoaded(string userInfoString)
     {
         Debug.Log("OnKongregateAPILoaded(" + userInfoString + ")");
@@ -45,8 +46,8 @@ public class Kongregate: MonoBehaviour
     // note: stats must be non-negative integers
     public void SubmitStatistic(string name, int value)
     {
-#if UNITY_WEBPLAYER
-		if (value<0)	return;
+#if UNITY_WEBGL
+        if (value<0)	return;
 		if (!isKongregateReady)	return;
 		Debug.Log("Kongregate.SubmitStatistic("+name+", "+value+")");
         Application.ExternalCall("kongregate.stats.submit", name,value);
@@ -68,7 +69,7 @@ public class Kongregate: MonoBehaviour
             {
                 GameObject obj = new GameObject("Kongregate");
                 instance = obj.AddComponent<Kongregate>();
-                GameObject.DontDestroyOnLoad(instance.gameObject);	// don't get destroyed in a level loading
+                DontDestroyOnLoad(instance.gameObject);	// don't get destroyed in a level loading
             }
             return instance;
         }

@@ -15,8 +15,14 @@ public class ResultBox : MonoBehaviour
     int stars = 0;  // how many stars awarded
     bool pressAnyKey = false; // if its time for the press any key
 	
-	// Use this for initialization
-	void Start () 
+    // used to make sure the result screen is hidden
+    public void Hide()
+    {
+        resultBox.gameObject.SetActive(false);
+        this.enabled=false;    // disable myself just in case
+    }
+    // Use this for initialization
+    void Start () 
 	{
         // stop music:
         MusicManager.Instance.FadeOut();

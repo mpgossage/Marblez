@@ -36,8 +36,11 @@ public class GameState :MonoBehaviour
 	public bool IsLevelAvailable(int level)
 	{
 		if (level<=0)
-			return false;	// no tutorial yet
-		if (level==1)
+			return false;   // no tutorial yet
+#if UNITY_EDITOR
+        return true;
+#endif
+        if (level==1)
 			return true;	// level 1 is always avaialable
 		LevelResult lr=Results[level-2]; // -2 is -1 for level to index & -1 for previous
 		return lr.stars>0;	// if any stars

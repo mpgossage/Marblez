@@ -30,6 +30,7 @@ public class GameGui : MonoBehaviour
 	void Start () 
 	{
         control = GetComponent<MarblezControl>();
+        GetComponent<ResultBox>().Hide();
         ballRequirement = MapLoader.BallRequirement;
         timer = MapLoader.TimeLimit;
 		nextBallColour=Random.Range(0,6);
@@ -184,19 +185,4 @@ public class GameGui : MonoBehaviour
 	    // trigger the results GUI
         GetComponent<ResultBox>().enabled = true;
     }
-	
-	/*void GotoMenu()
-	{
-		Application.LoadLevel("menu");
-	}
-	void GotoNext()
-	{
-		//Application.LoadLevel("marblezScene");
-		if (GameState.levelNumber<=20)
-		{
-			GameState.levelNumber++;
-			//scene=string.Format("level{0:00}",levelNumber);
-		}
-		Application.LoadLevel("marblezScene");
-	}*/
 }
