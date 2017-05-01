@@ -19,7 +19,7 @@ public class BallMove : MonoBehaviour
 	Path currentPath;
 	
 	MarblezControl map;
-    private SpriteRenderer renderer;
+    private SpriteRenderer spriteRenderer;
 	
 	public int GridX{get{return gridX;}}
 	public int GridY{get{return gridY;}}
@@ -27,7 +27,7 @@ public class BallMove : MonoBehaviour
 	
     void Awake()
     {
-        renderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
 	public void Init(int x,int y,Direction dir,int col)
@@ -61,7 +61,7 @@ public class BallMove : MonoBehaviour
 	public void SetColour(int col)
 	{
 		colour=col;
-        renderer.sprite = sprites[col];
+        spriteRenderer.sprite = sprites[col];
 	}
 	
 	// Use this for initialization

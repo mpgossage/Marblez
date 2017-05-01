@@ -9,7 +9,9 @@ public class MarblezControl : MonoBehaviour
     [SerializeField]
     private GameObject tileObject;
     [SerializeField]
-    private Sprite[] tileMap, tileTops;
+    private Sprite[] tileMap;
+    [SerializeField]
+    private Sprite[] tileTops;
     [SerializeField]
     private GameObject ballObject;
 
@@ -58,10 +60,6 @@ public class MarblezControl : MonoBehaviour
         CreateTiles();
         UpdateTiles();
 
-        //SpawnBall();
-        //SpawnBall(2,0);
-        //SpawnBall(2,0);
-        //SpawnBall(5,0);
         gui = GetComponent<GameGui>();
 
         // spawn a ball every 5 seconds (first one quickly)
@@ -73,20 +71,6 @@ public class MarblezControl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F1))
             gui.BallHome(); // one less ball
 #endif
-        // look for a click:
-        if (Input.GetMouseButtonUp(0))  // left
-        {
-            Vector2 gridPos = Vector3ToGrid(Input.mousePosition);
-            //Debug.Log("mouse" + Input.mousePosition + " grid:" + gridPos);
-            if (gridPos.y <= 7) // check limits
-                mouseClick(gridPos, true);
-        }
-        if (Input.GetMouseButtonUp(1))  // right
-        {
-            Vector2 gridPos = Vector3ToGrid(Input.mousePosition);
-            if (gridPos.y <= 7)
-                mouseClick(gridPos, false);
-        }
     }
     #endregion
 
@@ -116,6 +100,7 @@ public class MarblezControl : MonoBehaviour
                 tile.transform.SetParent(tileHolder);
                 tile.transform.position = GridToVector3(i, j);
                 uTileSprites[i, j] = tile.GetComponent<SpriteRenderer>();
+                tile.GetComponent<TileClickDetector>().SetGridPos(i, j, this);
             }
         }
 
@@ -149,9 +134,13 @@ public class MarblezControl : MonoBehaviour
                 {
                     GameObject spr = Instantiate(tileObject);
                     spr.transform.SetParent(tileHolder);
+                    spr.gameObject.name = "tiletop";
                     spr.transform.position = GridToVector3(i, j) + new Vector3(0, 0, -100); // more forward
                     uTileTopSprites[i, j] = spr.GetComponent<SpriteRenderer>(); ;
                     uTileTopSprites[i, j].sprite = tileTops[top];
+                    // don't need click detection on tile tops
+                    spr.GetComponent<BoxCollider2D>().enabled = false;
+                    spr.GetComponent<TileClickDetector>().enabled = false;
                 }
             }
         }
@@ -266,10 +255,8 @@ public class MarblezControl : MonoBehaviour
     /// call by the tile click routine when the user clicks on a tile
     /// </summary>
     /// <param name="gridPos"></param>
-    public void mouseClick(Vector2 gridPos, bool leftButton)
+    public void mouseClick(int gx, int gy, bool leftButton)
     {
-        //Debug.Log("mouseClick" + gridPos);
-        int gx = (int)gridPos.x, gy = (int)gridPos.y;
         int tileType = MapLoader.Tiles[gx, gy];
         if (tileType >= 40 && tileType <= 45)
         {
@@ -311,6 +298,12 @@ public class MarblezControl : MonoBehaviour
                 GetComponent<AudioSource>().PlayOneShot(sounds.ballRelease);
             }
         }
+    }
+    public void mouseClick(Vector2 gridPos, bool leftButton)
+    {
+        //Debug.Log("mouseClick" + gridPos);
+        int gx = (int)gridPos.x, gy = (int)gridPos.y;
+        mouseClick(gx, gy, leftButton);
     }
     /// <summary>
     /// called by the ball, when it hits the middle of the tile

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour 
 {
@@ -30,8 +31,7 @@ public class MainMenu : MonoBehaviour
 		selection=GUILayout.SelectionGrid(selection,levels,5);
 		if (GUILayout.Button("Play"))
 		{
-			//GameGui.scene=levels[selection];
-			Application.LoadLevel("marblezScene");
+			SceneManager.LoadScene("marblezScene");
 		}
 	}
 }

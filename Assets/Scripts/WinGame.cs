@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class WinGame : MonoBehaviour 
 {
     public enum Win { ReallyWin, CloseWin, NotWin };
-    //public static Win win = Win..CloseWin;
     public static Win win = Win.NotWin;
 
     public string realWinFile, closeWinFile;
@@ -21,15 +20,19 @@ public class WinGame : MonoBehaviour
 	void Start () 
     {
         text=GetComponent<Text>();
-        if (win==Win.NotWin)
+        SelectText(win);
+    }
+    void SelectText(Win result)
+    {
+        if (result == Win.NotWin)
         {
-            theText="Not yet";
+            theText = "Not yet";
         }
-        if (win==Win.CloseWin)
+        if (result == Win.CloseWin)
         {
             theText = UFileLoader.ReadAllText(closeWinFile);
         }
-        if (win == Win.ReallyWin)
+        if (result == Win.ReallyWin)
         {
             theText = UFileLoader.ReadAllText(realWinFile);
         }
@@ -37,6 +40,23 @@ public class WinGame : MonoBehaviour
     }
     void Update()
     {
+#if UNITY_EDITOR    // debug
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            SelectText(Win.CloseWin);
+            counter = 0;
+        }
+        else if (Input.GetKeyDown(KeyCode.F2))
+        {
+            SelectText(Win.ReallyWin);
+            counter = 0;
+        }
+        else if (Input.GetKeyDown(KeyCode.F3))
+        {
+            SelectText(Win.NotWin);
+            counter = 0;
+        }
+#endif
         if (Input.GetKeyDown(KeyCode.Escape))   // escape to skip to end
         {
             text.text = theText;

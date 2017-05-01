@@ -5,7 +5,9 @@ using UnityEngine.UI;
 public class GameGui : MonoBehaviour 
 {
     [SerializeField]
-    private Text txtScore, txtMessage;
+    private Text txtScore;
+    [SerializeField]
+    private Text txtMessage;
     [SerializeField]
     private Image sprNextBall;
     [SerializeField]
@@ -27,7 +29,7 @@ public class GameGui : MonoBehaviour
    	// Use this for initialization
 	void Start () 
 	{
-		control=GetComponent<MarblezControl>();
+        control = GetComponent<MarblezControl>();
         ballRequirement = MapLoader.BallRequirement;
         timer = MapLoader.TimeLimit;
 		nextBallColour=Random.Range(0,6);

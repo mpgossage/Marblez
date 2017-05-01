@@ -7,7 +7,9 @@ using UnityEngine.SceneManagement;
 public class LevelSelect : MonoBehaviour {
     public AudioClip rolloverSound, selectSound;
     [SerializeField]
-    private GameObject buttonObject, buttonPanel;
+    private GameObject buttonObject;
+    [SerializeField]
+    private GameObject buttonPanel;
     [SerializeField]
     private Sprite[] buttonSprites;
 
@@ -58,7 +60,6 @@ public class LevelSelect : MonoBehaviour {
 
             MouseOverDetection mouseOver = btn.GetComponent<MouseOverDetection>();
             mouseOver.OnMouseEnterAction = () => { this.GetComponent<AudioSource>().PlayOneShot(rolloverSound); };
-
         }
     }
     
