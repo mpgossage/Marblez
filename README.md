@@ -22,10 +22,10 @@ So here I what I did.
 1. Get the game working (You could create a game and just add KongTest)
 2. Set the player platform to webGL
 3. Open the Player Settings
-..* Screen size 940x620 (its 20px smaller than the Kongregate 960x640 size, to avoid scrollbars being added)
+  * Screen size 940x620 (its 20px smaller than the Kongregate 960x640 size, to avoid scrollbars being added)
 4. Select the Kongregate template
-..* This template is the original Unity template, the extra links removed and the Kong javascript added
-..* Because of CORS issues (developers.kongregate.com/blog/unity-html5-cors-and-you) I added both http & https
+  * This template is the original Unity template, the extra links removed and the Kong javascript added
+  * Because of CORS issues (developers.kongregate.com/blog/unity-html5-cors-and-you) I added both http & https
 5. Build it, zip it all up with index.html in the top directory
 6. Upload app as a Unity Application, but only upload the html5 version (ignore the warning about use html5)
 
