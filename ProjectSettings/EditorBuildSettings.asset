@@ -6,12 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/spriteTest.unity
-  - enabled: 0
-    path: Assets/Scenes/menu.unity
+    path: Assets/Scenes/KongTest.unity
+    guid: 7bb3eb4de38962744bd8e38210b41536
   - enabled: 1
     path: Assets/Scenes/marblezMenu.unity
+    guid: c176675f4c35ca24baa47fecad0eabaa
   - enabled: 1
     path: Assets/Scenes/marblezScene.unity
+    guid: bb5e47ea02b51ad4d8cd8de72e937bd5
   - enabled: 1
     path: Assets/Scenes/winScene.unity
+    guid: e289c67483094a249869f33c2f95f06c

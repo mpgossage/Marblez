@@ -3,6 +3,7 @@ using System.Collections;
 
 public class MusicManager : MonoBehaviour 
 {
+    public float MasterVolume = 0.7f;
 	float transitionTime=0,transitionDuration=0;
 	AudioSource source,source2;
 	
@@ -15,8 +16,8 @@ public class MusicManager : MonoBehaviour
 		//	return;	// no work
 		transitionTime+=Time.deltaTime;
 		float proportion=Mathf.Clamp01(transitionTime/transitionDuration);
-		source2.volume=proportion;
-		source.volume=1-proportion;
+		source2.volume= MasterVolume * proportion;
+		source.volume= MasterVolume * (1 - proportion);
         if (transitionTime >= transitionDuration)	// transition complete
 		{
             Debug.Log("Music Manager sound transition");
@@ -80,7 +81,10 @@ public class MusicManager : MonoBehaviour
 				instance = obj.AddComponent<MusicManager>();
 				instance.source=obj.AddComponent<AudioSource>();
 				instance.source2=obj.AddComponent<AudioSource>();
-				GameObject.DontDestroyOnLoad(instance);	// don't get destroyed in a level loading
+                // 2D sound not 3d 
+                instance.source.spatialBlend = instance.source2.spatialBlend = 0;
+                instance.source.volume = instance.source2.volume = instance.MasterVolume;
+                GameObject.DontDestroyOnLoad(instance);	// don't get destroyed in a level loading
 			}
 			return instance;
 		}

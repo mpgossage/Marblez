@@ -18,12 +18,14 @@ public class TileClickDetector : MonoBehaviour
         if (Input.GetMouseButtonUp(0))  // left
         {
             //Debug.LogFormat("LMB {0} {1}", gridX, gridY);
-            callback.mouseClick(gridX, gridY, true);
+            if (callback)
+                callback.mouseClick(gridX, gridY, true);
         }
         if (Input.GetMouseButtonUp(1))  // right
         {
             //Debug.LogFormat("RMB {0} {1}", gridX, gridY);
-            callback.mouseClick(gridX, gridY, false);
+            if (callback)
+                callback.mouseClick(gridX, gridY, false);
         }
     }
 }

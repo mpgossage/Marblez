@@ -34,17 +34,17 @@ public class ResultBox : MonoBehaviour
         fader.FadeIn(1);
         // grab text & set it
         Text titleText, detailText;
-        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BlankPanel/BgImage/TitleText", out titleText);
+        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BgImage/TitleText", out titleText);
         titleText.text = (stars > 0) ? "Level Complete!" : "Level Failed!";
         int min = GameState.levelTime / 60;
         int sec = GameState.levelTime % 60;
-        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BlankPanel/BgImage/ScoreText", out detailText);
+        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BgImage/ScoreText", out detailText);
         detailText.text = string.Format("Time Left:   {0}:{1:00}\n\nLevel Score:{2,5}\n\nTotal Score:{3,5}", min, sec, GameState.levelScore, GameState.levelScore + GameState.gameScore);
         // grab the stars
         Image star1, star2, star3;
-        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BlankPanel/BgImage/Star1", out star1);
-        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BlankPanel/BgImage/Star2", out star2);
-        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BlankPanel/BgImage/Star3", out star3);
+        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BgImage/Star1", out star1);
+        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BgImage/Star2", out star2);
+        UiUtils.GetGameObjectComponent(resultBox.gameObject, "BgImage/Star3", out star3);
         // set size to zero
         Vector3 starSize = star1.transform.localScale;
         star1.transform.localScale = star2.transform.localScale = star3.transform.localScale = Vector3.zero;
@@ -66,7 +66,7 @@ public class ResultBox : MonoBehaviour
         }
         // press any key:
         Text txtPressAnyKey;
-        if (UiUtils.GetGameObjectComponent(resultBox.gameObject, "BlankPanel/BgImage/PressAnyKeyText", out txtPressAnyKey))
+        if (UiUtils.GetGameObjectComponent(resultBox.gameObject, "BgImage/PressAnyKeyText", out txtPressAnyKey))
         {
             Color c = txtPressAnyKey.color;
             c.a = 0; // trans

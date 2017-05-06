@@ -29,7 +29,7 @@ public class GameState :MonoBehaviour
 		LevelResult lr=Results[level-1]; // -1 to offset for id
 		if (lr.score<score)	lr.score=score;
 		if (lr.stars<stars)	lr.stars=stars;
-		//SaveState();
+		SaveState();
 		SyncWithKong();	// save level details in Kong
 	}
 	// returns if a given level is available
@@ -108,7 +108,6 @@ public class GameState :MonoBehaviour
 		Debug.Log("Saving: "+str);
 		PlayerPrefs.SetString("Save1",str);
 		PlayerPrefs.Save(); // actually saves to disk
-		//builder.
 	}
 	// clears the save, resets all data
 	// called by LoadState() if it fails
